@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class ArenaManager {
@@ -16,6 +18,27 @@ public class ArenaManager {
 	
 	public ArenaManager(GunGameMain main) {
 		this.plugin = main;
+	}
+	
+	public void readDataFromConfig() {
+		this.arenas.clear();
+		this.players.clear();
+		
+		int arenaCount = this.plugin.getConfig().getInt("arenaCount");
+		
+		for (int x = 0; x < arenaCount; x++) {
+			Boolean isEnabled = this.plugin.getConfig().getBoolean("arenas." + x + ".enabled");
+			Location lobby = this.plugin.stringToLoc(this.plugin.getConfig().getString("arenas." + x + ".lobby"));
+			
+			List<String> spawn_strings = this.plugin.getConfig().getStringList("arenas." + x + ".spawns");
+			
+			List<Location> spawns = new ArrayList<Location>();
+			for (String s : spawn_strings) {
+				spawns.add(this.plugin.stringToLoc(s));
+			}
+			
+			this.arenas.add(new Arena(this, this.arenas.size(), 2, 10, isEnabled, lobby, spawns));
+		}
 	}
 	
 	public void createArena(Player p) {
@@ -60,6 +83,22 @@ public class ArenaManager {
 		for (Integer i : this.players.values()) {
 			if (i == arenaID) {
 				temp++;
+			}
+		}
+		
+		return temp;
+	}
+
+	@SuppressWarnings("deprecation")
+	public List<Player> getPlayerList(int arenaID) {
+		List<Player> temp = new ArrayList<Player>();
+		
+		for (String s : this.players.keySet()) {
+			if (this.players.get(s) == arenaID) {
+				Player p = Bukkit.getPlayer(s);
+				if (p != null) {
+					temp.add(p);
+				}
 			}
 		}
 		

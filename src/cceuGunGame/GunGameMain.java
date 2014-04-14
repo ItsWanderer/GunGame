@@ -21,6 +21,8 @@ public class GunGameMain extends JavaPlugin {
 		cfg.options().copyDefaults(true);
 		this.saveConfig();
 		
+		this.manager.readDataFromConfig();
+		
 		System.out.println("The Plugin " + this.getDescription().getName() + " Version " + this.getDescription().getVersion() +  " loaded!");
 	}
 
