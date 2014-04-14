@@ -1,0 +1,14 @@
+arenaCount: 2
+arenas:
+  '0':
+    enabled: true
+    lobby: Location
+    spawns:
+      - Locations
+      - Location
+  '1':
+    enabled: true
+    lobby: Location
+    spawns:
+      - Locations
+      - Location

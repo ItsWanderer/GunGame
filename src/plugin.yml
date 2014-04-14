@@ -1,0 +1,15 @@
+name: GunGame
+version: 1.0.0
+author: CCCoder
+
+main: cceuGunGame.GunGameMain
+
+commands:
+   gg:
+      description: GunGame
+      usage: /gg
+      aliases: [gungame, ggame, gung]
+   gga:
+      description: GunGame
+      usage: /gga
+      aliases: [gungameadmin, ggameadmin, gungadmin, ggadmin]
