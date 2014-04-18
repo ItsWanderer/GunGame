@@ -22,7 +22,11 @@ public class Arena {
 	
 	private boolean isEnabled;
 	
+	public ArenaPhase phase;
+	
 	public Arena(ArenaManager main, int arenaID, int minPlayers, int maxPlayers) {
+		this.phase = ArenaPhase.LOBBY;
+		
 		this.isEnabled = true;
 		
 		this.manager = main;
@@ -55,16 +59,26 @@ public class Arena {
 	}
 	
 	public void startArena() {
+		this.phase = ArenaPhase.STARTING;
+		
 		List<Location> temp_spawns = this.spawns;
 		
-		for (Player p : this.manager.getPlayerList(this.arenaID)) {
-			if (temp_spawns.size() > 0) { 
-				p.teleport(temp_spawns.get(0));
-				temp_spawns.remove(0);
-			} else {
-				System.out.println("§cERROR: No spawns available!!");
+		try {
+			for (Player p : this.manager.getPlayerList(this.arenaID)) {
+				try {
+					if (temp_spawns.size() > 0) { 
+						p.teleport(temp_spawns.get(0));
+						temp_spawns.remove(0);
+					} else {
+						System.out.println("§cERROR: No spawns available!!");
+					}
+				} catch (Exception e1) {
+				}
 			}
+		} catch (Exception e1) {
 		}
+		
+		startCountdown();
 	}
 	
 	public void joinLobby(Player p) {
@@ -133,6 +147,79 @@ public class Arena {
 		this.manager.plugin.getConfig().set("arenas." + this.arenaID + ".spawns", new ArrayList<String>());
 		
 		this.manager.plugin.saveConfig();
+	}
+	
+	public void startCountdown() {
+		this.phase = ArenaPhase.COUNTDOWN;
+		
+		for (Player pl : manager.getPlayerList(arenaID)) {
+			pl.sendMessage("§6§lThe game starts in 30sec");
+		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				for (Player pl : manager.getPlayerList(arenaID)) {
+					pl.sendMessage("§6§lThe game starts in 20sec");
+				}
+				Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, new Runnable() {
+					
+					@Override
+					public void run() {
+						for (Player pl : manager.getPlayerList(arenaID)) {
+							pl.sendMessage("§6§lThe game starts in 10sec");
+						}
+						Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, new Runnable() {
+							
+							@Override
+							public void run() {
+								for (Player pl : manager.getPlayerList(arenaID)) {
+									pl.sendMessage("§6§lThe game starts in 5sec");
+								}
+								Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, new Runnable() {
+									
+									@Override
+									public void run() {
+										for (Player pl : manager.getPlayerList(arenaID)) {
+											pl.sendMessage("§6§lThe game starts in 3sec");
+										}
+										Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, new Runnable() {
+											
+											@Override
+											public void run() {
+												for (Player pl : manager.getPlayerList(arenaID)) {
+													pl.sendMessage("§6§lThe game starts in 2sec");
+												}
+												Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, new Runnable() {
+													
+													@Override
+													public void run() {
+														for (Player pl : manager.getPlayerList(arenaID)) {
+															pl.sendMessage("§6§lThe game starts in 1sec");
+														}
+														Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, new Runnable() {
+															
+															@Override
+															public void run() {
+																for (Player pl : manager.getPlayerList(arenaID)) {
+																	pl.sendMessage("§6§lYou can now attack eachother!");
+																}
+																
+																phase = ArenaPhase.RUNNING;
+															}
+														}, 20);
+													}
+												}, 20);
+											}
+										}, 20);
+									}
+								}, 40);
+							}
+						}, 100);
+					}
+				}, 200);
+			}
+		}, 200);
 	}
 
 }
