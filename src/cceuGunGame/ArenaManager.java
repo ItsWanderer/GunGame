@@ -51,7 +51,7 @@ public class ArenaManager {
 		this.plugin.getConfig().set("arenas." + arenaCount + ".lobby", this.plugin.locToString(p.getLocation()));
 		this.plugin.getConfig().set("arenas." + arenaCount + ".spawns", new ArrayList<String>());
 		
-		this.plugin.getConfig().set("enabled", true);
+		this.plugin.getConfig().set("arenas." + arenaCount + ".enabled", true);
 		
 		this.plugin.saveConfig();
 	}
@@ -59,7 +59,7 @@ public class ArenaManager {
 	public void deleteArena(Arena a) {
 		this.arenas.remove(a);
 		
-		this.plugin.getConfig().set("enabled", false);
+		this.plugin.getConfig().set("arenas." + a.getID() + ".enabled", false);
 		
 		this.plugin.saveConfig();
 	}

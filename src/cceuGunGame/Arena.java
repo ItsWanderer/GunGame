@@ -1,6 +1,7 @@
 package cceuGunGame;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -48,6 +49,19 @@ public class Arena {
 		this.maxPlayers = maxPlayers;
 		
 		this.arenaID = arenaID;
+	}
+	
+	public Location getRandomSpawn() {
+		Collections.shuffle(this.spawns);
+		if (this.spawns.size() > 0) {
+			return this.spawns.get(0);
+		} else {
+			return null;
+		}
+	}
+	
+	public int getID() {
+		return this.arenaID;
 	}
 	
 	public void setEnabled(Boolean b) {

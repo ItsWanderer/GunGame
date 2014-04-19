@@ -23,6 +23,8 @@ public class GunGameMain extends JavaPlugin {
 		
 		this.manager.readDataFromConfig();
 		
+		Bukkit.getPluginManager().registerEvents(new GunGameListener(this), this);
+		
 		System.out.println("The Plugin " + this.getDescription().getName() + " Version " + this.getDescription().getVersion() +  " loaded!");
 	}
 
@@ -47,6 +49,12 @@ public class GunGameMain extends JavaPlugin {
 				if (!p.hasPermission("gungame.admin")) {
 					p.sendMessage("§cYou don't have the Permission to use that Command!");
 					return true;
+				}
+				
+				if (args.length == 0) {
+					args = new String[] {
+							"help",
+						};
 				}
 				
 				switch(args[0]) {
