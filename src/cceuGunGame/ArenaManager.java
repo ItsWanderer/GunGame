@@ -13,8 +13,12 @@ public class ArenaManager {
 	public GunGameMain plugin;
 	
 	private List<Arena> arenas = new ArrayList<Arena>();
-	
+
 	public HashMap<String, Integer> players = new HashMap<String, Integer>();
+	public HashMap<String, Integer> players_level = new HashMap<String, Integer>();
+	
+	public HashMap<String, Integer> players_oldlevel = new HashMap<String, Integer>();
+	public HashMap<String, Float> players_oldexp = new HashMap<String, Float>();
 	
 	public ArenaManager(GunGameMain main) {
 		this.plugin = main;

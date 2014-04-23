@@ -95,12 +95,23 @@ public class Arena {
 		startCountdown();
 	}
 	
+	public void win(Player p) {
+		//TODO:win-funktion
+	}
+	
 	public void joinLobby(Player p) {
 		if (this.maxPlayers > this.manager.getPlayers(this.arenaID) && this.spawns.size() > this.manager.getPlayers(this.arenaID)) {
 			
 			this.manager.players.put(p.getName(), this.arenaID);
 			
 			p.teleport(this.lobby);
+
+			this.manager.players_oldexp.put(p.getName(), p.getExp());
+			this.manager.players_oldlevel.put(p.getName(), p.getLevel());
+			
+			this.manager.players_level.put(p.getName(), 0);
+			p.setExp(1.0F);
+			p.setLevel(0);
 			
 		} else {
 			p.sendMessage("§cDiese Arena ist schon voll!");
