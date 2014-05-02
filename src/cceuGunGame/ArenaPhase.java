@@ -6,5 +6,6 @@ public enum ArenaPhase {
 	STARTING,
 	COUNTDOWN,
 	RUNNING,
+	ENDING,
 	
 }

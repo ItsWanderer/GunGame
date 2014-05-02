@@ -1,3 +1,4 @@
+mainSpawn: Location
 arenaCount: 2
 arenas:
   '0':

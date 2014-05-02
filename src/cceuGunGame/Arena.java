@@ -96,25 +96,46 @@ public class Arena {
 	}
 	
 	public void win(Player p) {
-		//TODO:win-funktion
+		this.phase = ArenaPhase.ENDING;
+		
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "eco give " + p.getName() + " 200");
+		p.sendMessage("§a§lYou won an GunGame-Round! §6§lYou have been rewarded with §e§l200$");
+		
+		for (Player pl : this.manager.getPlayerList(this.getID())) {
+			if (pl != p) {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "eco give " + pl.getName() + " 10");
+				pl.sendMessage("§a§lYou played an GunGame-Round! §6§lYou have been rewarded with §e§l10$");
+			}
+			pl.teleport(this.manager.plugin.mainSpawn);
+			
+			this.manager.players.remove(pl.getName());
+		}
+		
+		this.phase = ArenaPhase.LOBBY;
 	}
 	
 	public void joinLobby(Player p) {
 		if (this.maxPlayers > this.manager.getPlayers(this.arenaID) && this.spawns.size() > this.manager.getPlayers(this.arenaID)) {
 			
-			this.manager.players.put(p.getName(), this.arenaID);
+			if (this.phase == ArenaPhase.LOBBY || this.phase == ArenaPhase.COUNTDOWN) {
 			
-			p.teleport(this.lobby);
-
-			this.manager.players_oldexp.put(p.getName(), p.getExp());
-			this.manager.players_oldlevel.put(p.getName(), p.getLevel());
-			
-			this.manager.players_level.put(p.getName(), 0);
-			p.setExp(1.0F);
-			p.setLevel(0);
+				this.manager.players.put(p.getName(), this.arenaID);
+				
+				p.teleport(this.lobby);
+	
+				this.manager.players_oldexp.put(p.getName(), p.getExp());
+				this.manager.players_oldlevel.put(p.getName(), p.getLevel());
+				
+				this.manager.players_level.put(p.getName(), 0);
+				p.setExp(1.0F);
+				p.setLevel(0);
+				
+			} else {
+				p.sendMessage("§c§lThis arena is already running!");
+			}
 			
 		} else {
-			p.sendMessage("§cDiese Arena ist schon voll!");
+			p.sendMessage("§cThis arena is already full!");
 		}
 		
 		if (this.minPlayers >= this.manager.getPlayers(this.arenaID)) {

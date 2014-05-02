@@ -12,6 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class GunGameMain extends JavaPlugin {
 	
 	public ArenaManager manager;
+	
+	public Location mainSpawn;
 
 	@Override
 	public void onEnable() {
@@ -20,6 +22,10 @@ public class GunGameMain extends JavaPlugin {
 		FileConfiguration cfg = this.getConfig();
 		cfg.options().copyDefaults(true);
 		this.saveConfig();
+		
+		if (this.getConfig().getString("mainSpawn") != null) {
+			this.mainSpawn = stringToLoc(this.getConfig().getString("mainSpawn"));
+		}
 		
 		this.manager.readDataFromConfig();
 		
@@ -58,6 +64,12 @@ public class GunGameMain extends JavaPlugin {
 				}
 				
 				switch(args[0]) {
+					case "setmainspawn":
+						
+						this.mainSpawn = p.getLocation();
+						this.getConfig().set("mainSpawn", locToString(this.mainSpawn));
+						
+						break;
 					case "addarena":
 						
 						this.manager.createArena(p);
