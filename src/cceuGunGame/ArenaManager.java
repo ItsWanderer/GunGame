@@ -41,7 +41,14 @@ public class ArenaManager {
 				spawns.add(this.plugin.stringToLoc(s));
 			}
 			
-			this.arenas.add(new Arena(this, this.arenas.size(), 2, 10, isEnabled, lobby, spawns));
+			List<String> sign_strings = this.plugin.getConfig().getStringList("arenas." + x + ".signs");
+			
+			List<Location> signs = new ArrayList<Location>();
+			for (String s : sign_strings) {
+				signs.add(this.plugin.stringToLoc(s));
+			}
+			
+			this.arenas.add(new Arena(this, this.arenas.size(), 2, 10, isEnabled, lobby, spawns, signs));
 		}
 	}
 	

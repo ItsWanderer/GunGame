@@ -1,5 +1,7 @@
 package cceuGunGame;
 
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -7,6 +9,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +21,37 @@ public class GunGameListener implements Listener {
 	
 	public GunGameListener(GunGameMain main) {
 		this.plugin = main;
+	}
+	
+	@EventHandler
+	public void onSignWrite(SignChangeEvent e) {
+		if (e.getLine(0).equalsIgnoreCase("[GunGame]") && e.getPlayer().hasPermission("gungame.sign.create")) {
+			int arenaID = -1;
+			try {
+				arenaID = Integer.valueOf(e.getLine(1));
+			} catch (NumberFormatException e1) {
+			}
+			if (arenaID != -1) {
+				Location l = e.getBlock().getLocation();
+				Arena a = this.plugin.manager.getArena(arenaID);
+				
+				String[] lines = a.updateSign(l);
+				
+				int lineNumber = 0;
+				for (String s : lines) {
+					e.setLine(lineNumber, s);
+					lineNumber++;
+				}
+				
+				a.signs.add(l);
+				
+				List<String> temp = this.plugin.getConfig().getStringList("arenas." + a.getID() + ".signs");
+				temp.add(this.plugin.locToString(l));
+				this.plugin.getConfig().set("arenas." + a.getID() + ".signs", temp);
+				
+				this.plugin.saveConfig();
+			}
+		}
 	}
 
 	@EventHandler

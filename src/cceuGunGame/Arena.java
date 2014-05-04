@@ -6,9 +6,14 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
 public class Arena {
+	
+	public List<Location> signs = new ArrayList<Location>();
 	
 	private List<Location> spawns = new ArrayList<Location>();
 	
@@ -38,9 +43,10 @@ public class Arena {
 		this.arenaID = arenaID;
 	}
 	
-	public Arena(ArenaManager main, int arenaID, int minPlayers, int maxPlayers, boolean isEnabled, Location lobby, List<Location> spawns) {
+	public Arena(ArenaManager main, int arenaID, int minPlayers, int maxPlayers, boolean isEnabled, Location lobby, List<Location> spawns, List<Location> signs) {
 		this.isEnabled = isEnabled;
 		this.spawns = spawns;
+		this.signs = signs;
 		this.lobby = lobby;
 		
 		this.manager = main;
@@ -72,9 +78,55 @@ public class Arena {
 		return this.isEnabled;
 	}
 	
+	public void updateSigns() {
+		for (Location l : this.signs) {
+			this.updateSign(l);
+		}
+	}
+	
+	public String[] updateSign(Location l) {
+		if (l.getBlock().getType() == Material.WALL_SIGN) {
+			Block b = l.getBlock();
+			Sign s = (Sign) b.getState();
+			s.setLine(0, "§6[§bGunGame§6]");
+			s.setLine(1, "§aGG-" + (this.arenaID+1));
+			
+			switch (this.phase) {
+			case COUNTDOWN:
+				s.setLine(2, "§4Not joinable");
+				break;
+			case ENDING:
+				s.setLine(2, "§4Not joinable");
+				break;
+			case LOBBY:
+				s.setLine(2, "§5§lIn Lobby");
+				break;
+			case RUNNING:
+				s.setLine(2, "§4Not joinable");
+				break;
+			case STARTING:
+				s.setLine(2, "§6Starting...");
+				break;
+			}
+			
+			s.setLine(3, this.manager.getPlayerList(this.arenaID).size() + "/" + this.maxPlayers);
+			
+			s.update(true);
+			
+			return s.getLines();
+		} else {
+			return null;
+		}
+	}
+	
+	/*
+	 * [GunGame]
+	 * GG-1
+	 * In Lobby
+	 * 2 / 10
+	 */
+	
 	public void startArena() {
-		this.phase = ArenaPhase.STARTING;
-		
 		List<Location> temp_spawns = this.spawns;
 		
 		try {
@@ -98,6 +150,8 @@ public class Arena {
 	public void win(Player p) {
 		this.phase = ArenaPhase.ENDING;
 		
+		updateSigns();
+		
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "eco give " + p.getName() + " 200");
 		p.sendMessage("§a§lYou won an GunGame-Round! §6§lYou have been rewarded with §e§l200$");
 		
@@ -112,6 +166,8 @@ public class Arena {
 		}
 		
 		this.phase = ArenaPhase.LOBBY;
+		
+		updateSigns();
 	}
 	
 	public void joinLobby(Player p) {
@@ -130,6 +186,8 @@ public class Arena {
 				p.setExp(1.0F);
 				p.setLevel(0);
 				
+				updateSigns();
+				
 			} else {
 				p.sendMessage("§c§lThis arena is already running!");
 			}
@@ -138,7 +196,11 @@ public class Arena {
 			p.sendMessage("§cThis arena is already full!");
 		}
 		
-		if (this.minPlayers >= this.manager.getPlayers(this.arenaID)) {
+		if (this.minPlayers <= this.manager.getPlayers(this.arenaID) && this.phase == ArenaPhase.LOBBY) {
+			
+			this.phase = ArenaPhase.STARTING;
+			
+			updateSigns();
 			
 			for (Player pl : this.manager.getPlayerList(this.arenaID)) {
 				pl.sendMessage("§6§lThe game will start in 15 seconds!");
@@ -198,6 +260,8 @@ public class Arena {
 	public void startCountdown() {
 		this.phase = ArenaPhase.COUNTDOWN;
 		
+		updateSigns();
+		
 		for (Player pl : manager.getPlayerList(arenaID)) {
 			pl.sendMessage("§6§lThe game starts in 30sec");
 		}
@@ -252,6 +316,8 @@ public class Arena {
 																}
 																
 																phase = ArenaPhase.RUNNING;
+																
+																updateSigns();
 															}
 														}, 20);
 													}
